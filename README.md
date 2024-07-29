@@ -59,7 +59,7 @@ In future projects, I aim to focus on:
 ### Author
 
 - GitHub: [@Betelhem-hailu](#)
-- LinkedIn: [@betelhem-hailu](#)
+- LinkedIn: [@linkedin/betelhem-hailu](#)
 
 ### Acknowledgments
 
