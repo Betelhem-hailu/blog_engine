@@ -1,3 +1,3 @@
-./internal/.env
+.env
 ./internal/sql/blog.db
 blog_engine
