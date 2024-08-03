@@ -17,6 +17,7 @@ func RequireAuth(c *gin.Context) {
 	tokenString, err := c.Cookie("Authorization")
 
 	if err != nil {
+		c.Redirect(http.StatusTemporaryRedirect, "/login")
 		c.AbortWithStatus(http.StatusUnauthorized)
 	}
 
@@ -34,23 +35,34 @@ func RequireAuth(c *gin.Context) {
 
 		//check the exp
 		if float64(time.Now().Unix()) > claims["exp"].(float64) {
+			c.Redirect(http.StatusTemporaryRedirect, "/login")
 			c.AbortWithStatus(http.StatusUnauthorized)
 		}
 
 		//find the user with token sub
 		var user models.User
 		initializers.DB.First(&user, claims["sub"])
-		fmt.Println(user.ID)
 
 		if user.ID == 0 {
+			c.Redirect(http.StatusTemporaryRedirect, "/login")
 			c.AbortWithStatus(http.StatusUnauthorized)
 		}
+
+		 // Extract user ID from token claims
+		 claims := token.Claims.(jwt.MapClaims)
+		 userID := uint(claims["sub"].(float64))
+ 
+		 // Set user ID in context
+		 c.Set("user_id", userID)
+ 
+
 		//attach to req
 		c.Set("user", user)
 
 		//continue
 		c.Next()
 	} else {
+		c.Redirect(http.StatusTemporaryRedirect, "/login")
 		c.AbortWithStatus(http.StatusUnauthorized)
 	}
 

@@ -9,6 +9,4 @@ type Comment struct {
 	Id         int    `json:"id"`
     Name   string `json:"name"`
     Message string `json:"message"`
-	Created Time
-	Updated Time
 }

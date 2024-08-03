@@ -13,13 +13,20 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// ShowSignupPage displays the signup page
+func ShowSignupPage(c *gin.Context) {
+    c.HTML(http.StatusOK, "signup.html", gin.H{
+        "Title": "Signup",
+    })
+}
+
 func Singup(c *gin.Context) {
 	//Get the fullname email/pass req body
 	var body struct {
-		FullName string
-		Email    string
-		Password string
-	}
+        FullName string `form:"fullname"`
+        Email    string `form:"email"`
+        Password string `form:"password"`
+    }
 
 	if c.Bind(&body) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -51,15 +58,23 @@ func Singup(c *gin.Context) {
 	}
 
 	//Respond
-	c.JSON(http.StatusOK, gin.H{})
+	c.Redirect(http.StatusMovedPermanently, "/login")
+	// c.JSON(http.StatusOK, gin.H{})
+}
+
+// ShowLoginPage displays the login page
+func ShowLoginPage(c *gin.Context) {
+    c.HTML(http.StatusOK, "login.html", gin.H{
+        "Title": "Login",
+    })
 }
 
 func Login(c *gin.Context) {
 	//Get the email and pass
 	var body struct {
-		Email    string
-		Password string
-	}
+        Email    string `form:"email"`
+        Password string `form:"password"`
+    }
 
 	if c.Bind(&body) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -111,8 +126,8 @@ func Login(c *gin.Context) {
 	//send it back
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
-
-	c.JSON(http.StatusOK, gin.H{})
+	c.Redirect(http.StatusMovedPermanently, "/home")
+	// c.JSON(http.StatusOK, gin.H{})
 }
 
 func Validate(c *gin.Context) {
@@ -125,5 +140,27 @@ func Validate(c *gin.Context) {
 
 func Logout(c *gin.Context) {
 	c.SetCookie("Authorization", "", -1, "/", "localhost", false, true)
-	c.Redirect(http.StatusSeeOther, "/")
+	c.Redirect(http.StatusSeeOther, "/login")
+}
+
+// Home displays the home page for logged-in users
+func Home(c *gin.Context) {
+	userID, exists := c.Get("user")
+    if !exists {
+        c.Redirect(http.StatusTemporaryRedirect, "/login")
+        return
+    }
+
+    var user models.User
+    initializers.DB.First(&user, userID)
+
+    if user.ID == 0 {
+        c.Redirect(http.StatusTemporaryRedirect, "/login")
+        return
+    }
+
+    c.HTML(http.StatusOK, "home.html", gin.H{
+        "Title": "Home",
+        "User":  user,
+    })
 }

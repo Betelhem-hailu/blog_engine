@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
+	"go-gin-blog/internal/controllers"
 	"go-gin-blog/internal/initializers"
-	"go-gin-blog/internal/routes"
-	"net/http"
+	"go-gin-blog/internal/middleware"
+	// "go-gin-blog/internal/routes"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,30 +18,30 @@ func initialize() {
 func main() {
 	initialize()
 	r := gin.Default()
-	// r.LoadHTMLGlob("templates/*")
-	// r.GET("/index", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
-	// 		"title": "Main website",
-	// 	})
-	// })
-	fmt.Println("hello world 2")
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Welcome to the Home Page!",
-		})
-	})
-	r.GET("/about", func(c *gin.Context) {
-	    c.JSON(http.StatusOK, gin.H{
-	        "message": "This is the About Page.",
-	    })
-	})
-	r.GET("/user/:name", func(c *gin.Context) {
-	    name := c.Param("name")
-	    c.JSON(http.StatusOK, gin.H{
-	        "message": "Hello " + name,
-	    })
-	})
+	r.Static("./internal/assets", "./internal/assets")
+	r.LoadHTMLGlob("./internal/templates/*")
 
-	routes.SetupRoutes(r)
+	r.GET("/signup", controllers.ShowSignupPage)
+	r.GET("/login", controllers.ShowLoginPage)
+	r.POST("/signupapi", controllers.Singup)
+	r.POST("/loginapi", controllers.Login)
+	r.GET("/validate", middleware.RequireAuth, controllers.Validate)
+	r.GET("/logout", controllers.Logout)
+
+	authorized := r.Group("/")
+	authorized.Use(middleware.RequireAuth)
+	{
+		authorized.GET("/home", controllers.Home)
+		// Post routes
+		authorized.GET("/posts", controllers.ShowPostsPage)
+		// authorized.GET("/posts/:id", controllers.ShowViewPage)
+		authorized.GET("/posts/create", controllers.ShowCreatePostPage)
+		authorized.POST("/postsapi", controllers.CreatePost)
+		authorized.GET("/posts/:id", controllers.GetPost)
+		r.GET("/posts/:id/edit", controllers.EditPost)
+		r.POST("/posts/:id", controllers.UpdatePost)
+		authorized.DELETE("/posts/:id", controllers.DeletePost)
+	}
+	// routes.SetupRoutes(r)
 	r.Run()
 }

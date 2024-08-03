@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Post</title>
+</head>
+<body>
+    <h1>Edit Post</h1>
+
+    <form action="/posts/{{ .Post.ID }}" method="post">
+        <input type="hidden" name="_method" value="PUT">
+
+        <label for="title">Title:</label><br>
+        <input type="text" id="title" name="title" value="{{ .Post.Title }}" required><br><br>
+
+        <label for="content">Content:</label><br>
+        <textarea id="content" name="content" required>{{ .Post.Content }}</textarea><br><br>
+
+        <button type="submit">Update Post</button>
+    </form>
+
+    <p><a href="/posts/{{ .Post.ID }}">Cancel</a></p>
+</body>
+</html>

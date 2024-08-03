@@ -1,0 +1,51 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ .Title }}</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <h2>Welcome, {{ .User.FullName }}</h2>
+    <a href="/logout">Logout</a>
+    <button><a href="/addblog">create blog post</a></button>
+  </body>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Posts</title>
+</head>
+<body>
+    <h1>All Posts</h1>
+
+    {{ if .User }}
+        <p>Welcome, {{ .User.FullName }}! <a href="/logout">Logout</a></p>
+    {{ else }}
+        <p><a href="/login">Login</a> or <a href="/signup">Signup</a></p>
+    {{ end }}
+
+    <a href="/posts/create">Create a New Post</a>
+    <hr>
+
+    {{ if .Posts }}
+        {{ range .Posts }}
+            <div>
+                <h2>{{ .Title }}</h2>
+                <p>{{ .Content }}</p>
+                <p>Author: {{ .User.FullName }}</p>
+                <a href="/posts/{{ .Id }}">View Post</a> |
+                <a href="/posts/{{ .Id }}/edit">Edit</a> |
+                <form action="/posts/{{ .Id }}" method="post" style="display:inline;">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit">Delete</button>
+                </form>
+            </div>
+            <hr>
+        {{ else }}
+            <p>No posts found.</p>
+        {{ end }}
+    {{ end }}
+</body>
+</html>

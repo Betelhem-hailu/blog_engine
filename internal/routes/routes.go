@@ -9,12 +9,21 @@ import (
 )
 
 func SetupRoutes(r *gin.Engine) {
-	
 
-	r.POST("/signup", controllers.Singup)
-	r.POST("/login", controllers.Login)
+
+	r.GET("/signup", controllers.ShowSignupPage)
+    r.GET("/login", controllers.ShowLoginPage)
+	r.POST("/signupapi", controllers.Singup)
+	r.POST("/loginapi", controllers.Login)
 	r.GET("/validate", middleware.RequireAuth, controllers.Validate)
 	r.GET("/logout", controllers.Logout)
+
+	authorized := r.Group("/")
+    authorized.Use(middleware.RequireAuth)
+    {
+        authorized.GET("/home", controllers.Home)
+    }
+	
 	// r.GET("/user", uc.GetUser)
 	// r.GET("/logout", uc.GetUser)
     // r.POST("/login", uc.LoginUser)

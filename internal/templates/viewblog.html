@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Post</title>
+</head>
+<body>
+    <h1>{{ .Post.Title }}</h1>
+
+    <p>{{ .Post.Content }}</p>
+    <p>{{ .Post.UserID }}</p>
+    <p><strong>Author:</strong> {{ .Post.User.FullName }}</p>
+    <p><a href="/posts">Back to All Posts</a></p>
+
+    {{ if .User.ID }}
+        <a href="/posts/{{ .Post.ID }}/edit">Edit Post</a>
+        <form action="/posts/{{ .Post.ID }}" method="post" style="display:inline;">
+            <input type="hidden" name="_method" value="DELETE">
+            <button type="submit">Delete</button>
+        </form>
+    {{ end }}
+</body>
+</html>
